@@ -78,3 +78,7 @@ data Weather =
   deriving (Eq,Show,Ord,Enum,Bounded)
 
 data Turn = Turn Int
+
+data Ailment = Ailment String
+
+data Counterparty = User | Target deriving (Eq,Show,Ord,Enum)
