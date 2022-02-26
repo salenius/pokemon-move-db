@@ -24,6 +24,7 @@ class (Semigroup (repr Damage)) => DamageSYM repr where
   increasedCriticalHitRatio :: Int -> repr Damage
 
 infixr 4 `afterDamage`
+infixl 6 *.
 
 class DamageProdSYM repr where
   ignoreTypeImmunity :: repr DamageProd
