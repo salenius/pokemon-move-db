@@ -64,9 +64,20 @@ class WeatherSYM repr where
 class HPSYM repr where
   hp :: (MaxHP -> CurrentHP -> Int) -> repr PokemonEff
   endOfTurnHp :: (MaxHP -> CurrentHP -> Int) -> repr PokemonEff
+  drain :: (DamageDone -> CurrentHP -> Int) -> repr Effect
 
 class TypeCancelSYM repr where
   unlessTargetTypeIs :: repr PkmnType -> repr PokemonEff -> repr PokemonEff
+
+class MoveLimitSYM repr where
+  beginLoop :: repr MoveLoop -> repr Effect
+  afterLoopOver :: repr MoveLoop -> repr Effect -> repr MoveLoop
+  loopMove :: repr Turn -> repr MoveLoop
+
+class MoveCallSYM repr where
+  callAnyRandomMove :: repr MovePoolAvailable -> repr Effect
+  nonCallableMoves :: [MoveId] -> repr MovePoolAvailable
+  callableMoves :: [MoveId] -> repr MovePoolAvailable
 
 class SideEffect repr where
   noEffect :: repr Effect
@@ -84,11 +95,15 @@ data PokemonEff = PokemonEff String
 
 data CrossPokemonEff = CrossPokemonEff String
 
-data Ailment = Ailment String
+type MoveId = String
 
-data Counterparty = User | Target deriving (Eq,Show,Ord,Enum)
+type DamageDone = Int
+
+data MovePoolAvailable = MovePoolAvailable [MoveId]
 
 newtype Global a = Global a
+
+data MoveLoop = MoveLoop Int
 
 user = User
 target = Target
