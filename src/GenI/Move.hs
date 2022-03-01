@@ -1,6 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE LambdaCase #-}
 
 
 module GenI.Move where
@@ -16,6 +17,7 @@ hundred = 100
 (%) x = withProbability (x / hundred)
 
 class (Attribute mv, TypeOf mv, SideEffect mv) => GenIMove mv
+
 
 auroraBeam :: (GenIMove mv, DamageSYM mv, StatSYM mv, ModifStatSYM mv) => mv Move
 auroraBeam =
@@ -53,7 +55,7 @@ bodySlam =
   `afterDamage`
   30 % affect target (unlessTargetTypeIs normal (make paralyzed))
 
-crabhammer :: (GenIMove mv, DamageSYM mv) => mv Move
+crabhammer :: (GenIMove mv, DamageSYM mv, DamageProdSYM mv) => mv Move
 crabhammer =
   name "Crabhammer"
   `having`
@@ -61,10 +63,23 @@ crabhammer =
   typeOf water <>
   accuracy 0.85
   `effects`
-  basepower 90 <>
+  basepower 90 *.
   increasedCriticalHitRatio 1
   `afterDamage`
   noEffect
+
+disable :: (GenIMove mv, DisableSYM mv, TurnSYM mv) => mv Move
+disable =
+  name "Disable"
+  `having`
+  pp 20 <>
+  typeOf normal <>
+  accuracy 0.55
+  `effects`
+  forNext (randomTurnsBetween 0 7) (affect target disableRandomMove)
+
+drillPeck :: (GenIMove mv, DamageSYM mv) => mv Move
+drillPeck = strengthVariation "Drill Peck" 20 flying
 
 earthquake :: (GenIMove mv, DamageSYM mv) => mv Move
 earthquake =
@@ -74,9 +89,7 @@ earthquake =
   typeOf ground <>
   accuracy 1.0
   `effects`
-  basepower 100
-  `afterDamage`
-  noEffect
+  damageWithBasepower 100
 
 fireBlast :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 fireBlast =
@@ -113,6 +126,16 @@ flamethrower =
   basepower 95
   `afterDamage`
   10 % affect target (make burned)
+
+hydroPump :: (GenIMove mv, DamageSYM mv) => mv Move
+hydroPump =
+  name "Hydro Pump"
+  `having`
+  pp 5 <>
+  typeOf water <>
+  accuracy 0.8
+  `effects`
+  damageWithBasepower 120
 
 hyperFang :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 hyperFang =
@@ -170,6 +193,19 @@ lightScreen =
   `effects`
   forNext (turns 5) (setUp user lightScreen')
 
+petalDance :: (GenIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv)
+  => mv Move
+petalDance =
+  name "Petal Dance"
+  `having`
+  pp 20 <>
+  typeOf grass <>
+  accuracy 1.0
+  `effects`
+  basepower 70
+  `afterDamage`
+  loopBetween 3 4
+
 psychic' :: (GenIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
 psychic' =
   name "Psychic"
@@ -181,6 +217,9 @@ psychic' =
   basepower 95
   `afterDamage`
   33.2 % affect target (raise specialStat minus1)
+
+quickAttack :: (GenIMove mv, DamageSYM mv) => mv Move
+quickAttack = quickAttackVariation "Quick Attack" normal
 
 recover :: (GenIMove mv, HPSYM mv) => mv Move
 recover =
@@ -222,9 +261,7 @@ rockSlide =
   typeOf rock <>
   accuracy 0.9
   `effects`
-  basepower 75
-  `afterDamage`
-  noEffect
+  damageWithBasepower 75
 
 selfDestruct :: (GenIMove mv, DamageSYM mv, HPSYM mv) => mv Move
 selfDestruct =
@@ -258,9 +295,10 @@ solarBeam =
   `effects`
   charge (turns 1)
   `afterSucceeding`
-  basepower 120
-  `afterDamage`
-  noEffect
+  damageWithBasepower 120
+
+strength :: (GenIMove mv, DamageSYM mv) => mv Move
+strength = strengthVariation "Strength" 15 normal
 
 surf :: (GenIMove mv, DamageSYM mv) => mv Move
 surf =
@@ -270,9 +308,7 @@ surf =
   typeOf water <>
   accuracy 1.0
   `effects`
-  basepower 95
-  `afterDamage`
-  noEffect
+  damageWithBasepower 95
 
 swordsDance :: (GenIMove mv, StatSYM mv, ModifStatSYM mv) => mv Move
 swordsDance =
@@ -282,6 +318,20 @@ swordsDance =
   typeOf normal
   `effects`
   affect user (raise attackStat (+2))
+
+thrash :: (GenIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv)
+  => mv Move
+thrash =
+  name "Thrash"
+  `having`
+  pp 20 <>
+  typeOf normal <>
+  accuracy 1.0
+  `effects`
+  basepower 90
+  `afterDamage`
+  loopBetween 3 4
+
 
 thunderbolt :: (GenIMove mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
 thunderbolt =
@@ -293,6 +343,26 @@ thunderbolt =
   `effects`
   10 % affect target (unlessTargetTypeIs electric (make paralyzed))
 
+thunder :: (GenIMove mv, AilmentSYM mv, DamageSYM mv, TypeCancelSYM mv) => mv Move
+thunder =
+  name "Thunder"
+  `having`
+  pp 10 <>
+  typeOf electric <>
+  accuracy 0.7
+  `effects`
+   10 % affect target (unlessTargetTypeIs electric (make paralyzed))
+
+toxic :: (GenIMove mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
+toxic =
+  name "Toxic"
+  `having`
+  pp 10 <>
+  typeOf poison <>
+  accuracy 0.85
+  `effects`
+  affect target (unlessTargetTypeIs poison (make badlyPoisoned))
+
 waterfall :: (GenIMove mv, DamageSYM mv) => mv Move
 waterfall =
   name "Waterfall"
@@ -301,15 +371,17 @@ waterfall =
   typeOf water <>
   accuracy 1.0
   `effects`
-  basepower 80
-  `afterDamage`
-  noEffect
+  damageWithBasepower 80
 
 ----
 
 faintUser :: (SideEffect mv, HPSYM mv) => mv Effect
 faintUser =
   affect user (hp (-))
+
+faintTarget :: (SideEffect mv, HPSYM mv) => mv Effect
+faintTarget =
+  affect target (hp (-))
 
 partOfMaxHp :: Int -> (Int -> Int -> Int) -> (Int -> Int -> Int)
 partOfMaxHp part op max' cur' = cur' `op` (floor y)
@@ -320,3 +392,34 @@ partOfMaxHp part op max' cur' = cur' `op` (floor y)
 
 toMax :: Int -> Int -> Int
 toMax x y = y
+
+loopBetween :: (SideEffect mv, MoveLimitSYM mv, TurnSYM mv, AilmentSYM mv)
+  => Int -> Int -> mv Effect
+loopBetween x y =
+  beginLoop (loopMove (randomTurnsBetween x y) `afterLoopOver` affect target (make confused))
+
+damageWithBasepower :: (DamageSYM mv, SideEffect mv) => Int -> mv Effect
+damageWithBasepower bp = basepower bp `afterDamage` noEffect
+
+recoil :: (HPSYM mv) => Double -> mv Effect
+recoil pct = drain (\d h -> floor $ fromIntegral h - fromIntegral d * pct)
+
+quickAttackVariation nm t =
+  name nm
+  `having`
+  pp 30 <>
+  typeOf t <>
+  accuracy 1.0 <>
+  priority 1
+  `effects`
+  damageWithBasepower 40
+
+strengthVariation nm p t =
+  name nm
+  `having`
+  pp p <>
+  typeOf t <>
+  accuracy 1.0
+  `effects`
+  damageWithBasepower 80
+
