@@ -64,6 +64,10 @@ class TurnSYM repr where
   turns :: Int -> repr Turn
   randomTurnsBetween :: Int -> Int -> repr Turn
 
+class SemiInvulnerableSYM repr where
+  underground :: repr SemiInvulnerable
+  upInSkies :: repr SemiInvulnerable
+
 infixr 4 `effects`
 infixr 2 `having`
 
