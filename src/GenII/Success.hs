@@ -13,9 +13,12 @@ class (GenI.SuccessSYM repr) => SuccessSYM repr where
   execImmediatelyBeforeTarget :: repr Success
   failureIfUsedInRow :: repr FailureAlgo -> repr Success
   probabilityOfFailing :: (Int -> Int) -> repr FailureAlgo
+  requireUserHp :: (MaxHP -> CurrentHP -> Bool) -> repr Success
 
 class HitSYM repr where
+  replaceHit :: repr Move -> repr Hit -> repr Move
   bypassAccuracyCheck :: repr Hit
+  bypassAccuracyCheckDuring :: repr Weather -> repr Hit
 
 class NonStrikeOpSYM repr where
   switchingOut :: repr NonStrikeOp
