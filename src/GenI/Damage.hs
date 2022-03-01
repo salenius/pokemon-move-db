@@ -17,11 +17,11 @@ class (Semigroup (repr Damage)) => DamageSYM repr where
   basepower :: Int -> repr Damage
   directDamage :: repr DamageFactor -> repr Damage
   counterAttack :: Double -> repr Damage
+  ohko :: repr Damage
   (*.) :: repr Damage -> repr DamageProd -> repr Damage
   multiStrike :: (Int -> Double) -> repr Damage -> repr Damage
   damageRandomlyBetween :: repr DamageFactor -> repr DamageFactor -> repr Damage
   afterDamage :: repr Damage -> repr Effect -> repr Effect
-  increasedCriticalHitRatio :: Int -> repr Damage
 
 infixr 4 `afterDamage`
 infixl 6 *.
@@ -29,6 +29,7 @@ infixl 6 *.
 class DamageProdSYM repr where
   ignoreTypeImmunity :: repr DamageProd
   ignoreTypeAdvantages :: repr DamageProd
+  increasedCriticalHitRatio :: Int -> repr DamageProd
 
 class DamageFactorSYM repr where
   constantAmount :: Int -> repr DamageFactor
