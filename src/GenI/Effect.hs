@@ -43,6 +43,7 @@ class AilmentSYM repr where
   frozen :: repr Ailment
   paralyzed :: repr Ailment
   poisoned :: repr Ailment
+  badlyPoisoned :: repr Ailment
   cured :: repr Ailment
   flinched :: repr PokemonEff
   confused :: repr Ailment
@@ -79,6 +80,10 @@ class MoveCallSYM repr where
   nonCallableMoves :: [MoveId] -> repr MovePoolAvailable
   callableMoves :: [MoveId] -> repr MovePoolAvailable
 
+class DisableSYM repr where
+  disableLastMove :: repr PokemonEff
+  disableRandomMove :: repr PokemonEff
+
 class SideEffect repr where
   noEffect :: repr Effect
   forNext :: repr Turn -> repr Effect -> repr Effect
@@ -87,9 +92,12 @@ class SideEffect repr where
   orMaybe :: repr Effect -> repr Effect -> repr Effect
   ifMisses :: repr Effect -> repr Effect -> repr Effect
   affect :: Counterparty -> repr PokemonEff -> repr Effect
-  start :: repr Weather -> repr Effect
   setUp :: Counterparty -> repr CrossPokemonEff -> repr Effect
   break :: Counterparty -> repr CrossPokemonEff -> repr Effect
+  afterTurns :: Int -> repr Effect -> repr Effect
+
+class VanishSYM repr where
+  vanish :: repr SemiInvulnerable -> repr PokemonEff
 
 data PokemonEff = PokemonEff String
 
