@@ -1,24 +1,101 @@
-module GenII.Move where
+{-# LANGUAGE LambdaCase #-}
 
-import GenI.Move
+module GenII.Move (
+  module GenII.Move
+  ,module MovesOfGenI
+                  ) where
+
 import GenII.Attribute
 import GenII.Effect
 import GenII.Success
 import GenII.Damage
+import qualified GenI.Move as Prev
+import GenI.Move as MovesOfGenI hiding (
+  GenIMove,
+  blizzard,
+  bodySlam,
+  disable,
+  earthquake,
+  fireBlast,
+  psychic',
+  rockSlide,
+  solarBeam,
+  thunderbolt,
+  thunder,
+  toxic
+  )
 
 class (Attribute mv, TypeOf mv, SideEffect mv) => GenIIMove mv
 
-crunch :: (GenIIMove mv, DamageSYM mv, StatSYM mv, ModifStatSYM mv) => mv Move
-crunch =
-  name "Crunch"
+class (Prev.GenIMove mv, GenIIMove mv) => GenIMove mv
+
+aeroblast :: (GenIIMove mv, DamageSYM mv, DamageProdSYM mv) => mv Move
+aeroblast =
+  name "Aeroblast"
   `having`
-  pp 15 <>
-  typeOf dark <>
+  pp 5 <>
+  typeOf flying <>
+  accuracy 0.95
+  `effects`
+  basepower 100 *.
+  increasedCriticalHitRatio 1
+  `afterDamage`
+  noEffect
+
+bellyDrum :: (GenIIMove mv, ModifStatSYM mv, StatSYM mv, SuccessSYM mv, HPSYM mv) => mv Move
+bellyDrum =
+  name "Belly Drum"
+  `having`
+  pp 10 <>
+  typeOf normal
+  `effects`
+  requireUserHp (currentHpPctAtLeast 0.5) 
+  `afterSucceeding`
+  affect user (hp (cutHpPct 0.5)) `andAlso`
+  affect user (raise attackStat (+12))
+
+blizzard :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
+blizzard = Prev.blizzard `updateAttr` accuracy 0.7
+
+bodySlam :: (GenIMove mv, DamageSYM mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
+bodySlam = Prev.bodySlam `replaceEffect` (30 % affect target (make paralyzed))
+
+boneRush :: (GenIIMove mv, DamageSYM mv) => mv Move
+boneRush = boneRushVariation "Bone Rush" ground
+
+crunch :: (GenIIMove mv, DamageSYM mv, StatSYM mv, ModifStatSYM mv) => mv Move
+crunch = crunchVariation "Crunch" dark spDefenceStat
+
+destinyBond :: (GenIIMove mv, FaintingSYM mv, HPSYM mv) => mv Move
+destinyBond =
+  name "Destiny Bond"
+  `having`
+  pp 5 <>
+  typeOf ghost
+  `effects`
+  ifFaints user faintTarget
+
+disable :: (GenIMove mv, DisableSYM mv, TurnSYM mv) => mv Move
+disable = Prev.disable
+  `replaceEffect` (forNext (randomTurnsBetween 2 8) (affect target disableLastMove))
+
+dragonBreath :: (GenIIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
+dragonBreath =
+  name "Dragon Breath"
+  `having`
+  pp 20 <>
+  typeOf dragon <>
   accuracy 1.0
   `effects`
-  basepower 80
+  basepower 60
   `afterDamage`
-  20 % affect target (raise spDefenceStat minus1)
+  30 % affect target (make paralyzed)
+
+earthquake ::
+  (GenIMove mv, DamageSYM mv, DamageProdSYM mv, SemiInvulnerableSYM mv, VanishSYM mv)
+  => mv Move
+earthquake =
+  Prev.earthquake `replaceDamage` (basepower 100 *. againstVanishedTarget underground (*2))
 
 extremeSpeed :: (GenIIMove mv, DamageSYM mv) => mv Move
 extremeSpeed =
@@ -32,6 +109,20 @@ extremeSpeed =
   basepower 80
   `afterDamage`
   noEffect
+
+fireBlast :: (GenIMove mv, DamageSYM mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
+fireBlast = Prev.fireBlast `replaceEffect` (10 % affect target (make burned))
+
+foresight :: (GenIIMove mv, TypeEffectSYM mv, StatChangeRemapSYM mv) => mv Move
+foresight =
+  name "Foresight"
+  `having`
+  pp 40 <>
+  typeOf normal <>
+  accuracy 1.0
+  `effects`
+  mapAccuracyAndEvasion (\ac ev -> if ac < ev then (0,0) else (ac, ev)) `andAlso`
+  affect target (removeTypeImmunities ghost)
 
 gigaDrain :: (GenIIMove mv, DamageSYM mv, HPSYM mv) => mv Move
 gigaDrain =
@@ -70,17 +161,7 @@ ironTail =
   30 % affect target (raise defenceStat minus1)
 
 machPunch :: (GenIIMove mv, DamageSYM mv) => mv Move
-machPunch =
-  name "Mach Punch"
-  `having`
-  pp 30 <>
-  typeOf fighting <>
-  accuracy 1.0 <>
-  priority 1
-  `effects`
-  basepower 40
-  `afterDamage`
-  noEffect
+machPunch = quickAttackVariation "Mach Punch" fighting
 
 megahorn :: (GenIIMove mv, DamageSYM mv) => mv Move
 megahorn =
@@ -99,13 +180,13 @@ outrage :: (GenIIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM 
 outrage =
   name "Outrage"
   `having`
-  pp 10 <>
+  pp 15 <>
   typeOf dragon <>
   accuracy 1.0
   `effects`
   basepower 90
   `afterDamage`
-  beginLoop (loopMove (randomTurnsBetween 2 5) `afterLoopOver` affect target (make confused))
+  loopBetween 2 3
 
 painSplit :: (GenIIMove mv, HPSYM mv) => mv Move
 painSplit =
@@ -133,6 +214,9 @@ protect =
   `afterSucceeding`
   protectFromOpponentsMoves
 
+psychic' :: (GenIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
+psychic' = Prev.psychic' `replaceEffect` (10 % affect target (raise spDefenceStat minus1))
+
 pursuit :: (GenIIMove mv, DamageSYM mv, HitSYM mv, NonStrikeOpSYM mv, SuccessSYM mv)
   => mv Move
 pursuit =
@@ -150,34 +234,28 @@ pursuit =
    (basepower 40 `afterDamage` noEffect)
 
 rainDance :: (GenIIMove mv, WeatherSYM mv, TurnSYM mv) => mv Move
-rainDance =
-  name "Rain Dance"
+rainDance = rainDanceVariation "Rain Dance" water rainy
+
+rockSlide :: (GenIMove mv, AilmentSYM mv, DamageSYM mv) => mv Move
+rockSlide = Prev.rockSlide `replaceEffect` (30 % affect target flinched)
+
+sacredFire :: (GenIIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
+sacredFire =
+  name "Sacred Fire"
   `having`
   pp 5 <>
-  typeOf water
+  typeOf fire
   `effects`
-  forNext (turns 5) (start rainy)
+  basepower 100
+  `afterDamage`
+  thaw user `andAlso`
+  (50 % affect target (make burned))
 
 sandstorm' :: (GenIIMove mv, WeatherSYM mv, TurnSYM mv) => mv Move
-sandstorm' =
-  name "Sandstorm"
-  `having`
-  pp 10 <>
-  typeOf rock
-  `effects`
-  forNext (turns 5) (start sandstorm)
+sandstorm' = rainDanceVariation "Sandstorm" rock sandstorm
 
 shadowBall :: (GenIIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
-shadowBall =
-  name "Shadow Ball"
-  `having`
-  pp 15 <>
-  typeOf ghost <>
-  accuracy 1.0
-  `effects`
-  basepower 80
-  `afterDamage`
-  20 % affect target (raise spDefenceStat minus1)
+shadowBall = crunchVariation "Shadow Ball" ghost spDefenceStat
 
 sleepTalk :: (GenIIMove mv, SuccessSYM mv, MoveCallSYM mv, AilmentSYM mv) => mv Move
 sleepTalk =
@@ -202,14 +280,14 @@ sludgeBomb =
   `afterDamage`
   30 % affect target (make poisoned)
 
+solarBeam ::
+  (GenIMove mv, DamageSYM mv, DamageProdSYM mv, WeatherSYM mv, SuccessSYM mv, TurnSYM mv)
+  => mv Move
+solarBeam =
+  Prev.solarBeam  `replaceDamage` (basepower 120 *. weatherModifsDamage rainy (* 0.5))
+
 sunnyDay :: (GenIIMove mv, WeatherSYM mv, TurnSYM mv) => mv Move
-sunnyDay =
-  name "Sunny Day"
-  `having`
-  pp 10 <>
-  typeOf fire
-  `effects`
-  forNext (turns 5) (start sunny)
+sunnyDay = rainDanceVariation "Sunny Day" fire sunny
 
 swagger :: (GenIIMove mv, StatSYM mv, ModifStatSYM mv, AilmentSYM mv) => mv Move
 swagger =
@@ -222,6 +300,18 @@ swagger =
   affect target (raise attackStat (+2)) `andAlso`
   affect target (make confused)
 
+thunderbolt :: (GenIMove mv, DamageSYM mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
+thunderbolt = Prev.thunderbolt `replaceEffect` (10 % affect target (make paralyzed))
+
+thunder ::
+  (GenIMove mv, DamageSYM mv, AilmentSYM mv, TypeCancelSYM mv, WeatherSYM mv, HitSYM mv)
+  => mv Move
+thunder = Prev.thunder `replaceEffect` (30 % affect target (make paralyzed)) `replaceHit` (bypassAccuracyCheckDuring rainy)
+
+toxic :: (GenIMove mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
+toxic =
+  Prev.toxic `replaceEffect`
+  (affect target . unlessTargetTypeIs steel . unlessTargetTypeIs poison $ make badlyPoisoned)
 ---
 
 protectFailureRate :: SuccessSYM mv => mv FailureAlgo
@@ -229,3 +319,49 @@ protectFailureRate = probabilityOfFailing undefined
 
 sleepTalkCantCall :: [MoveId]
 sleepTalkCantCall = undefined
+
+thaw :: (AilmentSYM mv, SideEffect mv) => Counterparty -> mv Effect
+thaw cp = affect cp (cure burned)
+
+currentHpPctAtLeast :: Double -> (Int -> Int -> Bool)
+currentHpPctAtLeast d = \maxh curh -> fromIntegral curh >= d * fromIntegral maxh
+
+cutHpPct :: Double -> (Int -> Int -> Int)
+cutHpPct d = \x y -> floor $ fromIntegral y - d * fromIntegral x
+
+crunchVariation nm t stat =
+  name nm
+  `having`
+  pp 15 <>
+  typeOf t <>
+  accuracy 1.0
+  `effects`
+  basepower 80
+  `afterDamage`
+  20 % affect target (raise stat minus1)
+
+rainDanceVariation nm t w =
+  name nm
+  `having`
+  pp 5 <>
+  typeOf t
+  `effects`
+  forNext (turns 5) (start w)
+
+boneRushVariation nm t =
+  name nm
+  `having`
+  pp 10 <>
+  typeOf t <>
+  accuracy 0.80
+  `effects`
+  multiStrike probOfHitting (basepower 25)
+  `afterDamage`
+  noEffect
+
+probOfHitting = \case
+  2 -> 0.375
+  3 -> 0.375
+  4 -> 0.125
+  5 -> 0.125
+  _ -> 0
