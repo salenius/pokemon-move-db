@@ -13,6 +13,7 @@ class GenI.StatSYM repr => StatSYM repr where
 
 class GenI.SideEffect repr => SideEffect repr where
   replaceEffect :: repr Move -> repr Effect -> repr Move
+  start :: repr Weather -> repr Effect
 
 class GenI.AilmentSYM repr => AilmentSYM repr where
   infatuated :: repr Ailment
@@ -25,3 +26,12 @@ class ProtectionSYM repr where
 
 class GenI.HPSYM repr => HPSYM repr where
   adjustUserAndTargetHP :: (Int -> Int -> (Int,Int)) -> repr Effect
+
+class TypeEffectSYM repr where
+  removeTypeImmunities :: repr PkmnType -> repr PokemonEff
+
+class StatChangeRemapSYM repr where
+  mapAccuracyAndEvasion :: (Int -> Int -> (Int,Int)) -> repr Effect
+
+class FaintingSYM repr where
+  ifFaints :: Counterparty -> repr Effect -> repr Effect
