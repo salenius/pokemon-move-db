@@ -35,3 +35,7 @@ class StatChangeRemapSYM repr where
 
 class FaintingSYM repr where
   ifFaints :: Counterparty -> repr Effect -> repr Effect
+
+class SwitchPokemonSYM repr where
+  switchRandomPokemon :: repr PokemonEff
+  switchAnotherPokemon :: repr PokemonEff
