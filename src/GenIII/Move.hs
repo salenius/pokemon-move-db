@@ -178,6 +178,9 @@ poisonTail =
   `afterDamage`
   10 % affect target (make poisoned)
 
+psychoBoost :: (GenIIIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
+psychoBoost = overheatVariation "Psycho Boost" psychic
+
 pursuit ::
   (GenIIMove mv, DamageSYM mv, HitSYM mv, NonStrikeOpSYM mv, SuccessSYM mv) => mv Move
 pursuit = Prev.pursuit `updateAttr` makesContact
