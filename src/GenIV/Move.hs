@@ -35,6 +35,9 @@ auraSphere =
   `effects`
   damageWithBasepower 90
 
+avalanche :: (GenIVMove mv, DamageSYM mv, DamageProdSYM mv, DamageEventSYM mv) => mv Move
+avalanche = revengeVariation "Avalanche" ice `updateAttr` category physical
+
 braveBird :: (GenIVMove mv, DamageSYM mv, HPSYM mv) => mv Move
 braveBird = flareBlitzVariation "Brave Bird" flying noEffect
 
@@ -134,6 +137,23 @@ ironHead = poisonJabVariation "Iron Head" steel flinched
 
 leafStorm :: (GenIVMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
 leafStorm = leafStormVariation "Leaf Storm" grass
+
+payback :: (GenIVMove mv, DamageSYM mv, DamageEventSYM mv, DamageProdSYM mv) => mv Move
+payback =
+  name "Payback"
+  `having`
+  pp 10 <>
+  typeOf dark <>
+  category physical <>
+  makesContact <>
+  accuracy 1.0
+  `effects`
+  basepower 50 *.
+  doubleDamageIf userMovesAfterTarget *.
+  doubleDamageIf targetSwitchesOut *.
+  doubleDamageIf opponentUsesItem
+  `afterDamage`
+  noEffect
 
 poisonJab :: (GenIVMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 poisonJab = poisonJabVariation "Poison Jab" poison (make poisoned)
@@ -285,3 +305,7 @@ iceFangVariation nm t eff =
   `afterDamage`
   (10 % affect target flinched) `andAlso`
   (10 % affect target (make eff))
+
+doubleDamageIf :: (DamageEventSYM mv, DamageSYM mv, DamageProdSYM mv)
+  => mv DamageEvent -> mv DamageProd
+doubleDamageIf = modifyDamageIf (*2)

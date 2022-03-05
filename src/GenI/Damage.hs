@@ -22,6 +22,7 @@ class (Semigroup (repr Damage)) => DamageSYM repr where
   multiStrike :: (Int -> Double) -> repr Damage -> repr Damage
   damageRandomlyBetween :: repr DamageFactor -> repr DamageFactor -> repr Damage
   afterDamage :: repr Damage -> repr Effect -> repr Effect
+  
 
 infixr 4 `afterDamage`
 infixl 6 *.
@@ -38,9 +39,11 @@ class DamageFactorSYM repr where
   userTargetHpDelta :: repr DamageFactor
   multiplyBy :: Double -> repr DamageFactor -> repr DamageFactor
 
+
 ----
 newtype Damage = Damage Double deriving (Eq,Show,Ord)
 
 newtype DamageProd = DamageProd Double deriving (Eq,Show,Ord)
 
 newtype DamageFactor = DamageFactor Double deriving (Eq,Show,Ord)
+

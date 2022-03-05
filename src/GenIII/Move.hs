@@ -185,6 +185,9 @@ pursuit ::
   (GenIIMove mv, DamageSYM mv, HitSYM mv, NonStrikeOpSYM mv, SuccessSYM mv) => mv Move
 pursuit = Prev.pursuit `updateAttr` makesContact
 
+revenge :: (GenIIIMove mv, DamageSYM mv, DamageProdSYM mv, DamageEventSYM mv) => mv Move
+revenge = revengeVariation "Revenge" fighting
+
 rockBlast :: (GenIIIMove mv, DamageSYM mv) => mv Move
 rockBlast = boneRushVariation "Rock Blast" rock
 
@@ -343,3 +346,17 @@ overheatVariation nm t =
   basepower 140
   `afterDamage`
   affect user (raise spAttackStat ((-) 2))
+
+revengeVariation nm t =
+  name nm
+  `having`
+  pp 10 <>
+  typeOf t <>
+  accuracy 1.0 <>
+  makesContact <>
+  priority (-4)
+  `effects`
+  basepower 60 *.
+  modifyDamageIf (*2) targetHasAlreadyDamagedUserThisTurn
+  `afterDamage`
+  noEffect
