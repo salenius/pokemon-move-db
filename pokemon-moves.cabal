@@ -30,6 +30,21 @@ library
       GenI.Effect
       GenI.Move
       GenI.Success
+      GenII.Attribute
+      GenII.Damage
+      GenII.Effect
+      GenII.Move
+      GenII.Success
+      GenIII.Attribute
+      GenIII.Damage
+      GenIII.Effect
+      GenIII.Move
+      GenIII.Success
+      GenIV.Attribute
+      GenIV.Damage
+      GenIV.Effect
+      GenIV.Move
+      GenIV.Success
       Lib
   other-modules:
       Paths_pokemon_moves
