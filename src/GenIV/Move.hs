@@ -1,11 +1,12 @@
 module GenIV.Move where
 
 import qualified GenIII.Move as Prev
-import GenIII.Move
+import GenIII.Move (quickAttackVariation,overheatVariation,strengthVariation,damageWithBasepower)
 import GenIV.Attribute
 import GenIV.Effect
 import GenIV.Damage
 import GenIV.Success
+import GenIV.Updates
 
 class (Attribute mv, TypeOf mv, CategorySYM mv, SideEffect mv) => GenIVMove mv
 
