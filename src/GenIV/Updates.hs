@@ -1,7 +1,10 @@
-module GenIV.Updates where
+module GenIV.Updates where 
 
 import qualified GenIII.Move as Prev
 import GenIV.Attribute
+import GenIV.Damage
+import GenIV.Effect
+import GenIV.Success
 
 class (Attribute mv, TypeOf mv, CategorySYM mv, SideEffect mv) => GenIVMove mv
 class (GenIVMove mv, Prev.GenIIIMove mv) => GenIIIMove mv
@@ -32,7 +35,13 @@ dragonClaw = Prev.dragonClaw `updateAttr` category physical
 dragonDance :: (GenIIIMove mv, ModifStatSYM mv, StatSYM mv) => mv Move
 dragonDance = Prev.dragonDance `updateAttr` category status
 
-earthquake ::  (GenIMove mv, DamageSYM mv, DamageProdSYM mv,   HitSYM mv, SemiInvulnerableSYM mv, VanishSYM mv)
+earthquake ::
+  (GenIMove mv,
+   DamageSYM mv,
+   DamageProdSYM mv,
+   HitSYM mv,
+   SemiInvulnerableSYM mv,
+   VanishSYM mv) => mv Move
 earthquake = Prev.earthquake `updateAttr` category physical
 
 eruption :: (GenIIIMove mv, DamageSYM mv) => mv Move
@@ -45,7 +54,7 @@ fakeOut :: (GenIIIMove mv, DamageSYM mv, AilmentSYM mv, SuccessSYM mv) => mv Mov
 fakeOut = Prev.fakeOut `updateAttr` category physical
 
 hail' :: (GenIIIMove mv, WeatherSYM mv, TurnSYM mv) => mv Move
-hail = Prev.hail `updateAttr` category status
+hail' = Prev.hail' `updateAttr` category status
 
 heatWave :: (GenIIIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 heatWave = Prev.heatWave `updateAttr` category special
@@ -104,7 +113,12 @@ signalBeam = Prev.signalBeam `updateAttr` category special
 superpower :: (GenIIIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
 superpower = Prev.superpower `updateAttr` category physical
 
-surf :: (GenIMove mv, DamageSYM mv, DamageProdSYM mv, SemiInvulnerableSYM mv, VanishSYM mv)
+surf ::
+  (GenIMove mv,
+   DamageSYM mv,
+   DamageProdSYM mv,
+   SemiInvulnerableSYM mv,
+   VanishSYM mv) => mv Move
 surf = Prev.surf `updateAttr` category special
 
 taunt :: (GenIIIMove mv, TauntSYM mv, TurnSYM mv, StatusReflectionSYM mv) => mv Move
@@ -137,14 +151,8 @@ bellyDrum = Prev.bellyDrum `updateAttr` category status
 blizzard :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 blizzard = Prev.blizzard `updateAttr` category special
 
-bodySlam :: (GenIMove mv, DamageSYM mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
-bodySlam = Prev.bodySlam `updateAttr` category physical
-
 boneRush :: (GenIIMove mv, DamageSYM mv) => mv Move
 boneRush = Prev.boneRush `updateAttr` category physical
-
-crunch :: (GenIIMove mv, DamageSYM mv, StatSYM mv, ModifStatSYM mv) => mv Move
-crunch = Prev.crunch `updateAttr` category physical
 
 destinyBond :: (GenIIMove mv, FaintingSYM mv, HPSYM mv) => mv Move
 destinyBond = Prev.destinyBond `updateAttr` category status
@@ -154,12 +162,6 @@ disable = Prev.disable `updateAttr` category status
 
 dragonBreath :: (GenIIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 dragonBreath = Prev.dragonBreath `updateAttr` category special
-
-earthquake ::  (GenIMove mv, DamageSYM mv, DamageProdSYM mv, SemiInvulnerableSYM mv, VanishSYM mv)  => mv Move
-earthquake = Prev.earthquake `updateAttr` category physical
-
-extremeSpeed :: (GenIIMove mv, DamageSYM mv) => mv Move
-extremeSpeed = Prev.extremeSpeed `updateAttr` category physical
 
 fireBlast :: (GenIMove mv, DamageSYM mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
 fireBlast = Prev.fireBlast `updateAttr` category special
@@ -173,18 +175,6 @@ gigaDrain = Prev.gigaDrain `updateAttr` category special
 icyWind :: (GenIIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
 icyWind = Prev.icyWind `updateAttr` category special
 
-ironTail :: (GenIIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
-ironTail = Prev.ironTail `updateAttr` category physical
-
-machPunch :: (GenIIMove mv, DamageSYM mv) => mv Move
-machPunch = Prev.machPunch `updateAttr` category physical
-
-megahorn :: (GenIIMove mv, DamageSYM mv) => mv Move
-megahorn = Prev.megahorn `updateAttr` category physical
-
-outrage :: (GenIIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv)
-outrage = Prev.outrage `updateAttr` category physical
-
 painSplit :: (GenIIMove mv, HPSYM mv) => mv Move
 painSplit = Prev.painSplit `updateAttr` category status
 
@@ -192,22 +182,16 @@ protect :: (GenIIMove mv, ProtectionSYM mv, SuccessSYM mv) => mv Move
 protect = Prev.protect `updateAttr` category status
 
 psychic' :: (GenIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
-psychic = Prev.psychic `updateAttr` category special
-
-pursuit :: (GenIIMove mv, DamageSYM mv, HitSYM mv, NonStrikeOpSYM mv, SuccessSYM mv)
-pursuit = Prev.pursuit `updateAttr` category physical
+psychic' = Prev.psychic' `updateAttr` category special
 
 rainDance :: (GenIIMove mv, WeatherSYM mv, TurnSYM mv) => mv Move
 rainDance = Prev.rainDance `updateAttr` category status
-
-rockSlide :: (GenIMove mv, AilmentSYM mv, DamageSYM mv) => mv Move
-rockSlide = Prev.rockSlide `updateAttr` category physical
 
 sacredFire :: (GenIIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 sacredFire = Prev.sacredFire `updateAttr` category physical
 
 sandstorm' :: (GenIIMove mv, WeatherSYM mv, TurnSYM mv) => mv Move
-sandstorm = Prev.sandstorm `updateAttr` category status
+sandstorm' = Prev.sandstorm' `updateAttr` category status
 
 shadowBall :: (GenIIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
 shadowBall = Prev.shadowBall `updateAttr` category special
@@ -239,26 +223,11 @@ toxic = Prev.toxic `updateAttr` category status
 auroraBeam :: (GenIMove mv, DamageSYM mv, StatSYM mv, ModifStatSYM mv) => mv Move
 auroraBeam = Prev.auroraBeam `updateAttr` category special
 
-blizzard :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
-blizzard = Prev.blizzard `updateAttr` category special
-
-bodySlam :: (GenIMove mv, DamageSYM mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
-bodySlam = Prev.bodySlam `updateAttr` category physical
-
 crabhammer :: (GenIMove mv, DamageSYM mv, DamageProdSYM mv) => mv Move
 crabhammer = Prev.crabhammer `updateAttr` category physical
 
-disable :: (GenIMove mv, DisableSYM mv, TurnSYM mv) => mv Move
-disable = Prev.disable `updateAttr` category status
-
 drillPeck :: (GenIMove mv, DamageSYM mv) => mv Move
 drillPeck = Prev.drillPeck `updateAttr` category physical
-
-earthquake :: (GenIMove mv, DamageSYM mv) => mv Move
-earthquake = Prev.earthquake `updateAttr` category physical
-
-fireBlast :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
-fireBlast = Prev.fireBlast `updateAttr` category special
 
 firePunch :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
 firePunch = Prev.firePunch `updateAttr` category physical
@@ -284,11 +253,9 @@ leechSeed = Prev.leechSeed `updateAttr` category status
 lightScreen :: (GenIMove mv, DamageSYM mv, ScreenSYM mv, TurnSYM mv) => mv Move
 lightScreen = Prev.lightScreen `updateAttr` category status
 
-petalDance :: (GenIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv)
+petalDance ::
+  (GenIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv) => mv Move
 petalDance = Prev.petalDance `updateAttr` category special
-
-psychic' :: (GenIMove mv, DamageSYM mv, ModifStatSYM mv, StatSYM mv) => mv Move
-psychic = Prev.psychic `updateAttr` category special
 
 quickAttack :: (GenIMove mv, DamageSYM mv) => mv Move
 quickAttack = Prev.quickAttack `updateAttr` category physical
@@ -302,38 +269,20 @@ reflect = Prev.reflect `updateAttr` category status
 rest :: (GenIMove mv, AilmentSYM mv, HPSYM mv) => mv Move
 rest = Prev.rest `updateAttr` category status
 
-rockSlide :: (GenIMove mv, DamageSYM mv) => mv Move
-rockSlide = Prev.rockSlide `updateAttr` category physical
-
 selfDestruct :: (GenIMove mv, DamageSYM mv, HPSYM mv) => mv Move
 selfDestruct = Prev.selfDestruct `updateAttr` category physical
 
 sleepPowder :: (GenIMove mv, AilmentSYM mv) => mv Move
 sleepPowder = Prev.sleepPowder `updateAttr` category status
 
-solarBeam :: (GenIMove mv, DamageSYM mv, SuccessSYM mv, TurnSYM mv) => mv Move
-solarBeam = Prev.solarBeam `updateAttr` category special
-
 strength :: (GenIMove mv, DamageSYM mv) => mv Move
 strength = Prev.strength `updateAttr` category physical
-
-surf :: (GenIMove mv, DamageSYM mv) => mv Move
-surf = Prev.surf `updateAttr` category special
 
 swordsDance :: (GenIMove mv, StatSYM mv, ModifStatSYM mv) => mv Move
 swordsDance = Prev.swordsDance `updateAttr` category status
 
-thrash :: (GenIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv)
+thrash :: (GenIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv) => mv Move
 thrash = Prev.thrash `updateAttr` category physical
-
-thunderbolt :: (GenIMove mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
-thunderbolt = Prev.thunderbolt `updateAttr` category special
-
-thunder :: (GenIMove mv, AilmentSYM mv, DamageSYM mv, TypeCancelSYM mv) => mv Move
-thunder = Prev.thunder `updateAttr` category special
-
-toxic :: (GenIMove mv, AilmentSYM mv, TypeCancelSYM mv) => mv Move
-toxic = Prev.toxic `updateAttr` category status
 
 waterfall :: (GenIMove mv, DamageSYM mv) => mv Move
 waterfall = Prev.waterfall `updateAttr` category physical

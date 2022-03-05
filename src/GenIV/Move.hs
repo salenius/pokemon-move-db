@@ -1,12 +1,19 @@
 module GenIV.Move (module GenIV.Move,module GenIV.Updates) where
 
-import qualified GenIII.Move as Prev
-import GenIII.Move (quickAttackVariation,overheatVariation,strengthVariation,damageWithBasepower)
+import GenIII.Move (
+  quickAttackVariation,
+  overheatVariation,
+  strengthVariation,
+  damageWithBasepower,
+  (%),
+  recoil,
+  thaw,
+  revengeVariation)
 import GenIV.Attribute
 import GenIV.Effect
 import GenIV.Damage
 import GenIV.Success
-import GenIV.Updates
+import GenIV.Updates hiding (GenIVMove())
 
 class (Attribute mv, TypeOf mv, CategorySYM mv, SideEffect mv) => GenIVMove mv
 
