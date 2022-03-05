@@ -45,6 +45,7 @@ library
       GenIV.Effect
       GenIV.Move
       GenIV.Success
+      GenIV.Updates
       Lib
   other-modules:
       Paths_pokemon_moves
