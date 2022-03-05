@@ -1,4 +1,4 @@
-module GenIV.Move where
+module GenIV.Move (module GenIV.Move,module GenIV.Updates) where
 
 import qualified GenIII.Move as Prev
 import GenIII.Move (quickAttackVariation,overheatVariation,strengthVariation,damageWithBasepower)
