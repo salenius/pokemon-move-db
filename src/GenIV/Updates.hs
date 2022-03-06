@@ -5,6 +5,7 @@ import GenIV.Attribute
 import GenIV.Damage
 import GenIV.Effect
 import GenIV.Success
+import GenIII.Move ((%))
 
 class (Attribute mv, TypeOf mv, CategorySYM mv, SideEffect mv) => GenIVMove mv
 class (GenIVMove mv, Prev.GenIIIMove mv) => GenIIIMove mv
@@ -119,7 +120,8 @@ surf ::
    DamageProdSYM mv,
    SemiInvulnerableSYM mv,
    VanishSYM mv) => mv Move
-surf = Prev.surf `updateAttr` category special
+surf =
+  Prev.surf `updateAttr` category special
 
 taunt :: (GenIIIMove mv, TauntSYM mv, TurnSYM mv, StatusReflectionSYM mv) => mv Move
 taunt = Prev.taunt `updateAttr` category status
@@ -284,5 +286,8 @@ swordsDance = Prev.swordsDance `updateAttr` category status
 thrash :: (GenIMove mv, DamageSYM mv, MoveLimitSYM mv, AilmentSYM mv, TurnSYM mv) => mv Move
 thrash = Prev.thrash `updateAttr` category physical
 
-waterfall :: (GenIMove mv, DamageSYM mv) => mv Move
-waterfall = Prev.waterfall `updateAttr` category physical
+waterfall :: (GenIMove mv, DamageSYM mv, AilmentSYM mv) => mv Move
+waterfall =
+  Prev.waterfall
+  `updateAttr` category physical
+  `replaceEffect` (20 % affect target flinched)
