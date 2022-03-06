@@ -9,9 +9,9 @@ version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/githubuser/pokemon-moves#readme>
 homepage:       https://github.com/githubuser/pokemon-moves#readme
 bug-reports:    https://github.com/githubuser/pokemon-moves/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2022 Author name here
+author:         Tommi Salenius
+maintainer:     tommisalenius@gmail.com
+copyright:      2022 Tommi Salenius
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -46,7 +46,12 @@ library
       GenIV.Move
       GenIV.Success
       GenIV.Updates
+      GenV.Attribute
+      GenV.Damage
+      GenV.Effect
+      GenV.Move
       Lib
+      Moves.GenV
   other-modules:
       Paths_pokemon_moves
   hs-source-dirs:
