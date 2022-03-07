@@ -7,11 +7,11 @@ cabal-version: 1.12
 name:           pokemon-moves
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/githubuser/pokemon-moves#readme>
-homepage:       https://github.com/githubuser/pokemon-moves#readme
-bug-reports:    https://github.com/githubuser/pokemon-moves/issues
-author:         Tommi Salenius
-maintainer:     tommisalenius@gmail.com
-copyright:      2022 Tommi Salenius
+homepage:       https://github.com/salenius/pokemon-moves#readme
+bug-reports:    https://github.com/salenius/pokemon-moves/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2022 Author name here
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -21,45 +21,15 @@ extra-source-files:
 
 source-repository head
   type: git
-<<<<<<< HEAD
   location: https://github.com/salenius/pokemon-moves
-=======
-  location: git:https://github.com/salenius/pokemon-moves.git
->>>>>>> 7a241a6b02860b72e8f98d48bbae165cc51b0458
 
 library
   exposed-modules:
-      GenI.Attribute
-      GenI.Damage
-      GenI.Effect
-      GenI.Move
-      GenI.Success
-      GenII.Attribute
-      GenII.Damage
-      GenII.Effect
-      GenII.Move
-      GenII.Success
-      GenIII.Attribute
-      GenIII.Damage
-      GenIII.Effect
-      GenIII.Move
-      GenIII.Success
-      GenIV.Attribute
-      GenIV.Damage
-      GenIV.Effect
-      GenIV.Move
-      GenIV.Success
-      GenIV.Updates
-      GenV.Attribute
-      GenV.Damage
-      GenV.Effect
-      GenV.Move
-      Lib
       Moves.GenV
   other-modules:
       Paths_pokemon_moves
   hs-source-dirs:
-      src
+      Moves
   build-depends:
       base >=4.7 && <5
   default-language: Haskell2010
