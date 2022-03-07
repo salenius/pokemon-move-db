@@ -21,7 +21,11 @@ extra-source-files:
 
 source-repository head
   type: git
+<<<<<<< HEAD
   location: https://github.com/salenius/pokemon-moves
+=======
+  location: git:https://github.com/salenius/pokemon-moves.git
+>>>>>>> 7a241a6b02860b72e8f98d48bbae165cc51b0458
 
 library
   exposed-modules:
