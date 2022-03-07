@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Moves.GenV
+      GenV
   other-modules:
       Paths_pokemon_moves
   hs-source-dirs:
